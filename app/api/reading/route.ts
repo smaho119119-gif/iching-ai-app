@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import Anthropic from "@anthropic-ai/sdk";
+import { generateAIJSON, resolveAICredentials } from "@/lib/ai-provider";
 import { buildReading, localInterpretation, type CastingMethod, type LineValue } from "@/lib/iching";
 import { makeInterpretationPrompt, SYSTEM_PROMPT } from "@/lib/prompts";
 
@@ -16,22 +16,14 @@ export async function POST(request: Request) {
     const reading = buildReading(input.question, input.lines as LineValue[], method);
     let interpretation = localInterpretation(reading);
 
-    if (process.env.ANTHROPIC_API_KEY) {
+    const credentials = resolveAICredentials(request);
+    if (credentials) {
       try {
-        const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
-        const response = await anthropic.messages.create({
-          model: "claude-sonnet-4-20250514",
-          max_tokens: 1200,
-          system: SYSTEM_PROMPT,
-          messages: [{ role: "user", content: makeInterpretationPrompt(reading) }],
-        });
-        const text = response.content.find((block) => block.type === "text")?.text;
-        if (text) {
-          const parsed = JSON.parse(text.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, ""));
-          if (parsed && typeof parsed.overview === "string" && Array.isArray(parsed.actions)) interpretation = { ...interpretation, ...parsed, isAi: true };
-        }
-      } catch (error) {
-        console.error("AI interpretation unavailable; returning local reading.", error instanceof Error ? error.message : "Unknown AI error");
+        const text = await generateAIJSON(credentials, SYSTEM_PROMPT, makeInterpretationPrompt(reading));
+        const parsed = JSON.parse(text);
+        if (parsed && typeof parsed.overview === "string" && Array.isArray(parsed.actions)) interpretation = { ...interpretation, ...parsed, isAi: true };
+      } catch {
+        // Provider errors may include sensitive request metadata; do not log them.
       }
     }
 

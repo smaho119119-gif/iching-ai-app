@@ -4,6 +4,8 @@ import { useEffect, useMemo, useState } from "react";
 import { ArrowDown, ArrowRight, ArrowUpRight, Check, CircleHelp, Coins, Feather, RotateCcw, Sparkles, Waves, Wind } from "lucide-react";
 import { getLinesForHexagram, HEXAGRAMS } from "@/data/hexagrams";
 import { buildReading, castCoin, castYarrow, type CastingMethod, type LineValue } from "@/lib/iching";
+import { ApiKeySettings, getStoredAIHeaders } from "@/components/api-key-settings";
+import { BillingPlans } from "@/components/billing-plans";
 
 type ResultPayload = ReturnType<typeof buildReading>;
 type Interpretation = { overview: string; structure: string; judgment: string; changingLines: string; relating: string; advice: string; actions: string[]; reflection: string; isAi: boolean };
@@ -99,7 +101,8 @@ export function IChingApp() {
   const onComplete = async (lines: LineValue[]) => {
     setPhase("loading");
     try {
-      const response = await fetch("/api/reading", {method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({question,lines,method})});
+      const headers:Record<string,string>={"Content-Type":"application/json",...getStoredAIHeaders()};
+      const response = await fetch("/api/reading", {method:"POST",headers,body:JSON.stringify({question,lines,method})});
       const payload = await response.json();
       if (!response.ok) throw new Error(payload.error ?? "結果を読み込めませんでした。");
       setResult(payload); setPhase("result");
@@ -112,7 +115,7 @@ export function IChingApp() {
   const reset = () => { setResult(null); setQuestion(""); setPhase("home"); window.scrollTo({top:0,behavior:"smooth"}); };
 
   return <main className="site-shell">
-    <header className="site-nav"><a className="brand-mark" href="#top" onClick={reset}><span className="brand-symbol">易</span><span>易の余白<small>THE SPACE OF CHANGE</small></span></a><nav><a href="#about">易経について</a><button onClick={()=>setPhase(phase === "hexagrams" ? "home" : "hexagrams")}>六十四卦 <ArrowUpRight size={13}/></button></nav></header>
+    <header className="site-nav"><a className="brand-mark" href="#top" onClick={reset}><span className="brand-symbol">易</span><span>易の余白<small>THE SPACE OF CHANGE</small></span></a><nav><a href="#about">易経について</a><a href="#plans">プラン</a><a href="#api-key">AI設定</a><a href="/handwritten">手書き</a><button onClick={()=>setPhase(phase === "hexagrams" ? "home" : "hexagrams")}>六十四卦 <ArrowUpRight size={13}/></button></nav></header>
     <section className={`hero-section ${phase !== "home" ? "hero-compact" : ""}`} id="top"><div className="hero-copy"><div className="hero-kicker"><span/> THE ANCIENT ART OF CHANGE <span/></div><h1>答えよりも、<br/>問いを<span>深く。</span></h1><p className="hero-description">三千年の知恵、易経。<br/>変わりゆく日々のなかに、<br/>自分のための静かな余白を。</p>{phase === "home" && <div className="hero-cta-row"><button className="primary-cta" onClick={start}>今日の問いを立てる <ArrowRight size={16}/></button><span className="cta-caption">所要時間 約２分 · 無料</span></div>}</div><div className="hero-art" aria-hidden="true"><div className="art-orbit orbit-a"/><div className="art-orbit orbit-b"/><div className="art-orbit orbit-c"/><div className="art-center"><span>易</span><small>I · CHING</small></div><div className="art-trigram trigram-top"><i/><i/><i/></div><div className="art-trigram trigram-right"><i/><i/><i/></div><div className="art-trigram trigram-bottom"><i/><i/><i/></div><div className="art-trigram trigram-left"><i/><i/><i/></div><span className="art-coordinate coordinate-top">30° 16′ N</span><span className="art-coordinate coordinate-bottom">ANCIENT WISDOM · PRESENT MOMENT</span></div><div className="hero-index"><span>01</span><i/> AN INVITATION TO REFLECT</div></section>
     <div className="fine-rule"><span>陰</span><i/><span>陽</span></div>
     {phase === "home" && <><section className="quote-section"><div className="quote-mark">“</div><div><p>{dailyQuote.text}</p><span>{dailyQuote.source} <i/> {dailyQuote.translation}</span></div><div className="quote-date">本日のことば<br/>{new Intl.DateTimeFormat("ja-JP",{month:"long",day:"numeric"}).format(new Date())}</div></section><section className="invitation-section"><div className="invitation-index">A QUIET MOMENT <span>— 01</span></div><div className="invitation-body"><div><h2>いま、心にある問いを。<br/><span>そのまま、聞かせてください。</span></h2><p>易経は未来を決めつけるものではありません。<br/>状況を別の角度から眺め、自分の考えを整理するための、<br/>ひとつの対話のかたちです。</p></div><div className="question-card"><label htmlFor="question">心にある問い <span>OPTIONAL</span></label><textarea id="question" placeholder="例：新しい挑戦に踏み出すタイミングだろうか…" maxLength={500} value={question} onChange={(event)=>setQuestion(event.target.value)}/><div className="question-footer"><span>{question.length} / 500</span><button onClick={start}>問いを立てる <ArrowRight size={14}/></button></div></div></div></section></>}
@@ -121,6 +124,8 @@ export function IChingApp() {
     {phase === "result" && result && <ResultView reading={result.reading} interpretation={result.interpretation} onReset={reset}/>}
     {phase === "hexagrams" && <section className="hexagram-library"><div className="section-eyebrow">THE 64 HEXAGRAMS</div><h2>六十四の、<br/><span>変化のかたち。</span></h2><p>問いの導きとなる六十四卦。気になる卦を眺めてみてください。</p><div className="hexagram-grid">{HEXAGRAMS.map((hexagram)=><button key={hexagram.number} className="hexagram-tile" onClick={()=>{const values=getLinesForHexagram(hexagram.number).map((yang)=>yang?7:8) as LineValue[];const reading=buildReading("",values,"coins");setResult({reading,interpretation:{overview:hexagram.image,structure:hexagram.keywords.join(" · "),judgment:hexagram.judgment,changingLines:"変爻なし。卦全体の気配を眺めてください。",relating:"いまの卦を手がかりに、問いを立てて占うこともできます。",advice:hexagram.advice,actions:["卦の名前を味わう。","状況に重なるところを探す。","小さく行動してみる。"],reflection:"六十四卦は未来の断定ではなく、状況を考えるための視点です。",isAi:false}});setPhase("result");}}><span>{String(hexagram.number).padStart(2,"0")}</span><b>{hexagram.unicode}</b><strong>{nameReadings[hexagram.number]??hexagram.name}</strong><small>{hexagram.reading}</small></button>)}</div></section>}
     <section className="principles-section" id="about"><div className="principles-index">A WAY OF SEEING<br/><span>— 02</span></div><div className="principles-content"><div className="section-eyebrow">NOT A PREDICTION, BUT A PERSPECTIVE</div><h2>変化を見つめることは、<br/>自分に立ち返ること。</h2><p>陰と陽。六本の爻。六十四の卦。<br/>易経は、変化する世界を見つめるために育まれてきた古い知恵です。<br/>ここではそれを、今日を考えるためのひとつの視点としてお届けします。</p><div className="principle-points"><div><span>01</span><b>卦は決断をしません。</b><p>選択をするのは、いつもあなた自身です。</p></div><div><span>02</span><b>問いは、あなたのもの。</b><p>誰かの答えより、自分の問いを大切に。</p></div><div><span>03</span><b>変化には、余白がある。</b><p>今日の読みは、考えはじめるきっかけ。</p></div></div></div></section>
+    <BillingPlans/>
+    <ApiKeySettings/>
     <footer className="site-footer"><a className="brand-mark footer-brand" href="#top" onClick={reset}><span className="brand-symbol">易</span><span>易の余白<small>THE SPACE OF CHANGE</small></span></a><p>古い知恵に、いまの問いを重ねる。</p><span className="footer-copyright">© 2026 易の余白　·　古典の一解釈です</span></footer>
   </main>;
 }
