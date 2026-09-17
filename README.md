@@ -28,12 +28,12 @@ npm run dev
 
 基本のコイン占いとローカル解釈は、APIキー・ログインなしで使えます。AI解釈と手書き認識は、Supabaseを接続するとメールアドレスと8文字以上のパスワードで始める72時間の試用対象になります。期限はサーバー側で設定され、利用者は延長・変更できません。
 
-1. Supabaseでこのアプリ専用の東京リージョン（`ap-northeast-1`）プロジェクトを作成します。
+1. 東京リージョン（`ap-northeast-1`）の既存Supabaseプロジェクト、またはこのアプリ専用プロジェクトを用意します。
 2. SQL Editorで[`supabase/schema.sql`](supabase/schema.sql)を実行します。作成されるテーブルとトリガーはすべて`iching_ai_app_`プレフィックス付きです。
-3. Authentication → Providers → Emailの「Confirm email」を無効にします。これにより、登録直後にログインできます。
-4. VercelのProduction環境変数に`NEXT_PUBLIC_SUPABASE_URL`と`NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`を設定します。Publishable keyはブラウザー向けですが、service-role keyは絶対に公開しません。
+3. Supabase Auth の設定は変更不要です。このアプリは `iching_ai_app_` プレフィクスの専用テーブルと関数だけを利用するため、同じSupabaseプロジェクト上の他アプリのログイン設定に影響しません。
+4. VercelのProduction環境変数に`NEXT_PUBLIC_SUPABASE_URL`、`NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`、32文字以上の`ICHING_AI_APP_AUTH_SECRET`を設定します。Publishable keyはブラウザー向けですが、秘密鍵は絶対に公開しません。
 
-確認メールを無効にする運用では、メールアドレスの誤登録も即時に試用枠を消費します。公開運用ではSupabase Authのレート制限とパスワードリセット用SMTPも必ず設定してください。
+登録したメールアドレスとパスワードですぐに72時間利用できます。パスワードはハッシュ化して保存し、ログイン状態はサーバー署名付きのHttpOnly Cookieで管理します。
 
 ## 主な機能
 
@@ -62,8 +62,8 @@ npm run build
 CLIで実行する場合、`vercel login`で認証してからこのリポジトリ直下で`vercel link`、VercelのProduction用環境変数設定、`vercel --prod`の順に実行します。GitHub Actions/CLIのトークンはリポジトリへ書かず、各CLIの安全なログインストアまたはCI Secretで管理します。
 
 1. GitHubリポジトリをVercelにImportし、Framework PresetがNext.js、Root Directoryが`./`であることを確認します。
-2. Supabaseを使う場合は新規プロジェクト作成時にリージョン「Northeast Asia (Tokyo) / `ap-northeast-1`」を選びます。既存プロジェクトのリージョンを後から切り替えるのではなく、必要なら東京に新規作成して移行します。
-3. Supabase SQL Editorで[`supabase/schema.sql`](supabase/schema.sql)を実行します。VercelのProduction環境変数に`SUPABASE_URL`、`SUPABASE_SERVICE_ROLE_KEY`、ランダムな`CRON_SECRET`を設定します。service-roleキーはサーバー専用で、`NEXT_PUBLIC_`を付けず、ブラウザーへ送らないでください。
+2. Supabaseを使う場合は東京リージョン「Northeast Asia (Tokyo) / `ap-northeast-1`」の既存プロジェクトを利用できます。
+3. Supabase SQL Editorで[`supabase/schema.sql`](supabase/schema.sql)を実行します。VercelのProduction環境変数に`NEXT_PUBLIC_SUPABASE_URL`、`NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`、32文字以上の`ICHING_AI_APP_AUTH_SECRET`、ランダムな`CRON_SECRET`を設定します。アカウント表はRLSで非公開のまま、登録・認証・日次接続確認に必要な最小限の関数だけを公開します。
 4. `AI_PROVIDER`と対応するサーバー側AIキー（必要な場合）、LINE・Stripeの必要な環境変数をVercel側へ登録します。ローカルの`.env.local`はGitHubへコミットしません。
 5. Deploy後、`https://<your-domain>/api/health`が`{"status":"ok"}`を返すことを確認します。CronはVercelが認証ヘッダー付きで日次実行し、Supabaseの接続確認だけを行います。
 

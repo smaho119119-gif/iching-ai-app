@@ -1,4 +1,4 @@
-import { getSupabaseServerClient, isSupabaseConfigured } from "@/lib/supabase/server";
+import { getAppSession } from "@/lib/app-auth";
 
 export type TrialAccess = {
   configured: boolean;
@@ -8,16 +8,8 @@ export type TrialAccess = {
 };
 
 export async function getTrialAccess(): Promise<TrialAccess> {
-  if (!isSupabaseConfigured()) return { configured: false, signedIn: false, active: false, endsAt: null };
-  const supabase = await getSupabaseServerClient();
-  if (!supabase) return { configured: false, signedIn: false, active: false, endsAt: null };
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { configured: true, signedIn: false, active: false, endsAt: null };
-  const { data } = await supabase
-    .from("iching_ai_app_profiles")
-    .select("trial_ends_at")
-    .eq("id", user.id)
-    .maybeSingle();
-  const endsAt = data?.trial_ends_at ?? null;
-  return { configured: true, signedIn: true, active: Boolean(endsAt && new Date(endsAt).getTime() > Date.now()), endsAt };
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || !process.env.ICHING_AI_APP_AUTH_SECRET) return { configured: false, signedIn: false, active: false, endsAt: null };
+  const session = await getAppSession();
+  if (!session) return { configured: true, signedIn: false, active: false, endsAt: null };
+  return { configured: true, signedIn: true, active: new Date(session.trialEndsAt).getTime() > Date.now(), endsAt: session.trialEndsAt };
 }

@@ -9,17 +9,18 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const supabaseUrl = process.env.SUPABASE_URL;
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!supabaseUrl || !serviceRoleKey) {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const publishableKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+  if (!supabaseUrl || !publishableKey) {
     return NextResponse.json({ status: "ok", database: "not-configured" }, {
       headers: { "Cache-Control": "no-store, max-age=0" },
     });
   }
 
   try {
-    const response = await fetch(`${supabaseUrl.replace(/\/$/u, "")}/rest/v1/iching_ai_app_keepalive?id=eq.1&select=id`, {
-      headers: { apikey: serviceRoleKey, Authorization: `Bearer ${serviceRoleKey}` },
+    const response = await fetch(`${supabaseUrl.replace(/\/$/u, "")}/rest/v1/rpc/iching_ai_app_touch_keepalive`, {
+      method: "POST",
+      headers: { apikey: publishableKey, Authorization: `Bearer ${publishableKey}`, "Content-Type": "application/json" },
       signal: AbortSignal.timeout(5000),
       cache: "no-store",
     });

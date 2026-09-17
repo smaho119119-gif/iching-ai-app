@@ -1,7 +1,9 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { getSupabaseServerClient } from "@/lib/supabase/server";
+import { cookies } from "next/headers";
+import { authenticateAccount, registerAccount } from "@/lib/app-accounts";
+import { clearSessionCookie, createSessionToken, sessionCookie } from "@/lib/app-auth";
 
 function credentials(formData: FormData) {
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
@@ -17,29 +19,26 @@ function message(error: unknown) {
 
 export async function signUp(formData: FormData) {
   try {
-    const supabase = await getSupabaseServerClient();
-    if (!supabase) throw new Error("認証サービスを準備中です。しばらくしてからお試しください。");
     const { email, password } = credentials(formData);
-    const { data, error } = await supabase.auth.signUp({ email, password });
-    if (error) throw error;
-    if (!data.session) throw new Error("登録確認が必要です。運営者はSupabaseで「Confirm email」を無効にしてください。");
+    const account = await registerAccount(email, password);
+    const cookie = sessionCookie(createSessionToken({ id: account.id, email: account.email, trialEndsAt: account.trial_ends_at }));
+    (await cookies()).set(cookie.name, cookie.value, cookie.options);
   } catch (error) { redirect(`/login?error=${message(error)}`); }
   redirect("/?welcome=trial");
 }
 
 export async function signIn(formData: FormData) {
   try {
-    const supabase = await getSupabaseServerClient();
-    if (!supabase) throw new Error("認証サービスを準備中です。しばらくしてからお試しください。");
     const { email, password } = credentials(formData);
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) throw error;
+    const account = await authenticateAccount(email, password);
+    const cookie = sessionCookie(createSessionToken({ id: account.id, email: account.email, trialEndsAt: account.trial_ends_at }));
+    (await cookies()).set(cookie.name, cookie.value, cookie.options);
   } catch (error) { redirect(`/login?error=${message(error)}`); }
   redirect("/");
 }
 
 export async function signOut() {
-  const supabase = await getSupabaseServerClient();
-  await supabase?.auth.signOut();
+  const cookie = clearSessionCookie();
+  (await cookies()).set(cookie.name, cookie.value, cookie.options);
   redirect("/");
 }
