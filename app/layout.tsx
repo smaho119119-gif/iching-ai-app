@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import "./readable-mobile.css";
 
 export const metadata: Metadata = {
   title: "易の余白 — 変化のなかに、考える時間を。",

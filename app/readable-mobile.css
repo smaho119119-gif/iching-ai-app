@@ -1,0 +1,217 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&display=swap');
+
+:root {
+  --sans: "Noto Sans JP", system-ui, sans-serif;
+}
+
+body {
+  font-family: var(--serif), "Noto Sans JP", sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.8;
+  -webkit-font-smoothing: auto;
+}
+
+button, input, textarea, select { font-family: var(--sans); }
+
+@media (min-width: 601px) and (max-width: 1024px) {
+  .site-shell { padding-inline: 5%; }
+  .site-nav { min-height: 80px; height: auto; gap: 18px; }
+  .site-nav nav { gap: clamp(12px, 2vw, 24px); }
+  .hero-section { height: 510px; }
+  .hero-copy h1 { font-size: clamp(46px, 6vw, 58px); }
+  .hero-art { width: min(44vw, 430px); height: min(44vw, 430px); right: 0; }
+  .invitation-section, .principles-section { grid-template-columns: 145px 1fr; gap: 24px; }
+  .invitation-body { grid-template-columns: minmax(0, 1fr) minmax(300px, 360px); gap: 24px; }
+  .result-wrap { max-width: 760px; }
+  .handwriting-shell { max-width: 760px; padding-inline: 32px; }
+}
+
+@media (min-width: 1025px) {
+  body { font-size: 17px; }
+  .site-nav nav a, .site-nav nav button { font-size: 13px; }
+}
+
+@media (max-width: 820px) {
+  .site-shell { padding-inline: 5%; }
+  .site-nav { min-height: 76px; height: auto; gap: 12px; }
+  .site-nav nav { gap: 12px; flex-wrap: wrap; justify-content: flex-end; }
+  .hero-section { height: auto; min-height: 520px; padding-block: 48px 62px; }
+  .hero-art { opacity: .38; right: -55px; }
+  .invitation-section, .principles-section { grid-template-columns: 1fr; gap: 18px; padding-block: 54px; }
+  .invitation-body { grid-template-columns: 1fr; gap: 24px; }
+  .question-card { width: 100%; }
+  .quote-section { gap: 14px; padding-block: 20px; }
+  .quote-date { display: none; }
+  .result-wrap { width: min(100%, 700px); }
+}
+
+@media (max-width: 600px) {
+  body { font-size: 16px; }
+  .site-shell { padding-inline: 20px; }
+  .site-nav { min-height: 68px; align-items: flex-start; flex-direction: column; padding-block: 13px; gap: 10px; }
+  .site-nav nav { width: 100%; display: grid; grid-template-columns: repeat(5, max-content); gap: 8px 14px; justify-content: space-between; overflow-x: auto; padding-bottom: 4px; }
+  .site-nav nav a, .site-nav nav button { min-height: 36px; white-space: nowrap; font-size: 12px; }
+  .site-nav nav button { padding: 0; }
+  .hero-section { min-height: 500px; padding-block: 43px 58px; }
+  .hero-art { width: 320px; height: 320px; right: -110px; top: 105px; opacity: .22; }
+  .hero-copy { max-width: 100%; }
+  .hero-copy h1 { font-size: clamp(36px, 10vw, 42px); letter-spacing: .08em; }
+  .hero-cta-row { align-items: stretch; flex-direction: column; gap: 12px; }
+  .primary-cta, .cast-button { width: 100%; min-height: 54px; }
+  .cta-caption { text-align: center; }
+  .quote-section { align-items: flex-start; }
+  .quote-section>div:nth-child(2)>span { display: block; }
+  .question-footer button { min-height: 44px; }
+  .principle-points { grid-template-columns: 1fr; }
+  .principle-points>div { padding: 14px 0; }
+  .principle-points>div+div { border-left: 0; border-top: 1px solid #e1dfd8; padding-left: 0; }
+  .plan-button, .portal-button, .corporate-note>button,
+  .api-key-save, .api-key-clear, .photo-picker, .handwriting-submit { min-height: 48px; }
+  .provider-options { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 7px; }
+  .provider-options button { min-width: 0; }
+  .api-key-controls { flex-wrap: wrap; }
+  .api-key-controls>div { width: 100%; justify-content: flex-end; }
+  .api-key-safety { gap: 8px; }
+  .hexagram-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .handwriting-shell { padding-inline: 20px; }
+
+  .site-nav nav a,
+  .site-nav nav button { font-size: 12px; font-weight: 600; }
+  .brand-mark { font-size: 18px; }
+  .brand-mark small { font-size: 9px; }
+  .hero-kicker,
+  .ritual-kicker,
+  .section-eyebrow,
+  .loading-label { font-size: 10px; font-weight: 600; }
+  .hero-description { font-size: 17px; line-height: 2; }
+  .hero-copy h1 { font-size: 40px; }
+  .hero-compact .hero-copy h1 { font-size: 34px; }
+  .primary-cta,
+  .cast-button { min-height: 50px; font-size: 16px; font-weight: 600; }
+  .cta-caption { font-size: 12px; }
+
+  .quote-section>div:nth-child(2)>p { font-size: 17px; line-height: 1.9; font-weight: 600; }
+  .quote-section>div:nth-child(2)>span { font-size: 14px; line-height: 1.9; }
+  .invitation-body h2,
+  .principles-content h2,
+  .hexagram-library h2 { font-size: 24px; line-height: 1.8; font-weight: 600; }
+  .invitation-body>div:first-child>p,
+  .principles-content>p,
+  .hexagram-library>p { font-size: 15px; line-height: 2; }
+  .invitation-index,
+  .principles-index { font-size: 11px; }
+  .question-card label { font-size: 16px; font-weight: 600; }
+  .question-card label span,
+  .question-footer>span { font-size: 12px; }
+  .question-card textarea { min-height: 88px; height: auto; font: 16px/1.8 var(--sans); }
+  .question-footer button { min-height: 46px; font-size: 15px; font-weight: 600; }
+  .principle-points b { font-size: 15px; font-weight: 700; }
+  .principle-points p { font-size: 14px; line-height: 1.9; }
+
+  .ritual-stage { padding-inline: 8px; }
+  .ritual-heading { font-size: 22px; line-height: 1.7; font-weight: 600; }
+  .ritual-intro { font-size: 15px; line-height: 1.9; }
+  .method-toggle button { min-height: 46px; padding-inline: 16px; font-size: 15px; font-weight: 600; }
+  .build-line-row>span:first-child,
+  .build-marker,
+  .coin { font-size: 13px; font-weight: 600; }
+  .ritual-note { font-size: 13px; line-height: 1.8; }
+
+  .result-topline { font-size: 11px; }
+  .result-number span,
+  .chart-caption,
+  .chart-caption b { font-size: 11px; }
+  .result-hero h2 { font-size: 21px; font-weight: 600; }
+  .result-hero>div:last-child>p { font-size: 13px; }
+  .hex-position,
+  .change-label,
+  .chart-trigrams>div>span,
+  .chart-trigrams small { font-size: 12px; }
+  .chart-trigrams b,
+  .related-inner b { font-size: 15px; font-weight: 600; }
+  .reading-copy h3,
+  .change-card h3,
+  .related-card h3,
+  .advice-section h3 { font-size: 20px; font-weight: 600; }
+  .reading-overview,
+  .reading-copy>p,
+  .change-card p,
+  .related-card>p,
+  .advice-section>p,
+  .judgment-quote>p { font-size: 16px; line-height: 2; }
+  .judgment-quote>span,
+  .related-inner span { font-size: 12px; }
+  .structure-copy { font-size: 14px !important; }
+  .action-list li>p,
+  .reflection-note p { font-size: 15px; line-height: 1.9; }
+  .action-list li>span,
+  .ai-footnote { font-size: 12px; }
+  .result-actions button { min-height: 50px; font-size: 14px; font-weight: 600; }
+  .loading-panel h2 { font-size: 23px; }
+  .loading-panel>p { font-size: 15px; }
+  .hexagram-tile>span,
+  .hexagram-tile>strong { font-size: 11px; font-weight: 600; }
+  .hexagram-tile>small { font-size: 10px; }
+
+  .billing-section h2,
+  .api-key-section h2 { font-size: 25px; line-height: 1.7; font-weight: 600; }
+  .billing-intro,
+  .api-key-intro { font-size: 15px; line-height: 1.9; }
+  .plan-label { font-size: 11px; }
+  .plan-ribbon { font-size: 10px; }
+  .plan-card h3 { font-size: 20px; font-weight: 600; }
+  .plan-card>p,
+  .plan-card li,
+  .corporate-note p { font-size: 14px; line-height: 1.8; }
+  .plan-price { font-size: 34px; }
+  .plan-price span { font-size: 14px; }
+  .plan-button,
+  .portal-button,
+  .corporate-note>button { min-height: 48px; font-size: 15px; font-weight: 600; }
+  .billing-note,
+  .billing-message,
+  .api-key-message { font-size: 13px; line-height: 1.9; }
+  .api-key-card>label { font-size: 12px; font-weight: 700; }
+  .api-key-card>label>span { font-size: 10px; }
+  .provider-options button { min-height: 46px; padding-inline: 15px; font: 600 15px var(--sans); }
+  .api-key-input-row input { min-height: 50px; font-size: 16px; }
+  .api-key-visibility { min-width: 44px; min-height: 44px; }
+  .api-key-controls>span,
+  .api-key-clear { font-size: 12px; }
+  .api-key-save { min-height: 46px; padding-inline: 15px; font: 600 14px var(--sans); }
+  .api-key-safety p { font-size: 13px; line-height: 1.9; }
+
+  .handwriting-shell h1 { font-size: 36px; line-height: 1.6; font-weight: 600; }
+  .handwriting-back { min-height: 44px; font-size: 14px; font-weight: 600; }
+  .handwriting-intro { font-size: 16px; line-height: 1.9; }
+  .handwriting-guide { padding: 18px; }
+  .handwriting-guide>b { font-size: 16px; font-weight: 700; }
+  .handwriting-guide ul { font-size: 15px; line-height: 1.9; }
+  .photo-picker { min-height: 54px; font-size: 16px; font-weight: 700; }
+  .handwriting-question { font-size: 15px; font-weight: 600; }
+  .handwriting-shell textarea { min-height: 96px; padding: 13px; font: 16px/1.8 var(--sans); }
+  .handwriting-submit { min-height: 54px; height: auto; font-size: 16px; font-weight: 700; }
+  .handwriting-error { font-size: 15px; line-height: 1.9; }
+  .handwriting-result { padding: 18px; }
+  .handwriting-result h2 { font-size: 23px; font-weight: 700; }
+  .handwriting-result>p,
+  .handwriting-result small,
+  .vision-interpretation p,
+  .vision-interpretation li { font-size: 15px; line-height: 1.9; }
+  .vision-lines span { font-size: 15px; }
+  .handwriting-result>a { min-height: 44px; font-size: 14px; font-weight: 600; }
+  .handwriting-disclaimer { font-size: 13px; line-height: 1.9; }
+  .site-footer>p { font-size: 12px; }
+  .footer-copyright { font-size: 10px; }
+}
+
+@media (max-width: 380px) {
+  .site-shell { padding-inline: 15px; }
+  .site-nav nav { grid-template-columns: repeat(5, max-content); gap: 6px 9px; }
+  .site-nav nav a, .site-nav nav button { font-size: 11px; }
+  .hero-copy h1 { font-size: 35px; }
+  .result-chart { grid-template-columns: 1fr; }
+  .chart-trigrams { border-left: 0; border-top: 1px solid var(--line); padding: 12px 0 0; }
+  .hexagram-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
