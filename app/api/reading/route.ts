@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { generateAIJSON, resolveAICredentials } from "@/lib/ai-provider";
 import { buildReading, localInterpretation, type CastingMethod, type LineValue } from "@/lib/iching";
 import { makeInterpretationPrompt, SYSTEM_PROMPT } from "@/lib/prompts";
+import { getTrialAccess } from "@/lib/trial";
 
 export const runtime = "nodejs";
 
@@ -18,12 +19,15 @@ export async function POST(request: Request) {
 
     const credentials = resolveAICredentials(request);
     if (credentials) {
-      try {
-        const text = await generateAIJSON(credentials, SYSTEM_PROMPT, makeInterpretationPrompt(reading));
-        const parsed = JSON.parse(text);
-        if (parsed && typeof parsed.overview === "string" && Array.isArray(parsed.actions)) interpretation = { ...interpretation, ...parsed, isAi: true };
-      } catch {
-        // Provider errors may include sensitive request metadata; do not log them.
+      const trial = await getTrialAccess();
+      if (!trial.configured || trial.active) {
+        try {
+          const text = await generateAIJSON(credentials, SYSTEM_PROMPT, makeInterpretationPrompt(reading));
+          const parsed = JSON.parse(text);
+          if (parsed && typeof parsed.overview === "string" && Array.isArray(parsed.actions)) interpretation = { ...interpretation, ...parsed, isAi: true };
+        } catch {
+          // Provider errors may include sensitive request metadata; do not log them.
+        }
       }
     }
 

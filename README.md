@@ -24,6 +24,17 @@ npm run dev
 
 運営者がサーバー側にキーを設定する場合は`.env.local`に`AI_PROVIDER`（`openai`、`gemini`、`anthropic`）と対応する`OPENAI_API_KEY`、`GEMINI_API_KEY`、`ANTHROPIC_API_KEY`を設定します。実キーをGitHubにコミットしないでください。
 
+## メールログインと3日間お試し
+
+基本のコイン占いとローカル解釈は、APIキー・ログインなしで使えます。AI解釈と手書き認識は、Supabaseを接続するとメールアドレスと8文字以上のパスワードで始める72時間の試用対象になります。期限はサーバー側で設定され、利用者は延長・変更できません。
+
+1. Supabaseでこのアプリ専用の東京リージョン（`ap-northeast-1`）プロジェクトを作成します。
+2. SQL Editorで[`supabase/schema.sql`](supabase/schema.sql)を実行します。作成されるテーブルとトリガーはすべて`iching_ai_app_`プレフィックス付きです。
+3. Authentication → Providers → Emailの「Confirm email」を無効にします。これにより、登録直後にログインできます。
+4. VercelのProduction環境変数に`NEXT_PUBLIC_SUPABASE_URL`と`NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`を設定します。Publishable keyはブラウザー向けですが、service-role keyは絶対に公開しません。
+
+確認メールを無効にする運用では、メールアドレスの誤登録も即時に試用枠を消費します。公開運用ではSupabase Authのレート制限とパスワードリセット用SMTPも必ず設定してください。
+
 ## 主な機能
 
 - コイン法・筮竹法による本卦、変爻、之卦の算出

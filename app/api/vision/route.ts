@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { generateAIJSONWithImage, resolveAICredentials } from "@/lib/ai-provider";
 import { buildReading, type LineValue } from "@/lib/iching";
 import { getActivePlan } from "@/lib/billing";
+import { getTrialAccess } from "@/lib/trial";
 
 export const runtime = "nodejs";
 export const maxDuration = 30;
@@ -10,6 +11,10 @@ const ALLOWED_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "image/g
 const VISION_PROMPT = `Read the six-line I Ching hexagram drawn in this image. Read from bottom to top: the bottom stroke is position 1 and the top stroke is position 6. A continuous stroke is yang; a broken stroke is yin. A circle next to a line marks changing yang; an X next to a line marks changing yin. Return JSON only with keys recognized (boolean), confidence (0 to 1), lines (exactly six objects with position 1-6, type "yang" or "yin", changing (boolean)), and notes (short Japanese string). If there are not exactly six clearly readable I Ching lines, set recognized false. Do not infer or invent unclear strokes.`;
 
 export async function POST(request: Request) {
+  const trial = await getTrialAccess();
+  if (trial.configured && !trial.active) {
+    return NextResponse.json({ error: trial.signedIn ? "3日間のお試し期間が終了しました。" : "手書き認識は、メールアドレスで3日間お試し登録後に使えます。", code: trial.signedIn ? "TRIAL_EXPIRED" : "LOGIN_REQUIRED" }, { status: trial.signedIn ? 403 : 401 });
+  }
   const credentials = resolveAICredentials(request);
   if (!credentials) {
     return NextResponse.json({ error: "手書き認識にはOpenAI・Gemini・AnthropicのいずれかのAPIキーが必要です。AI設定から登録してください。" }, { status: 503 });
