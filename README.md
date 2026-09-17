@@ -48,6 +48,8 @@ npm run build
 
 ## Vercelへのデプロイ
 
+CLIで実行する場合、`vercel login`で認証してからこのリポジトリ直下で`vercel link`、VercelのProduction用環境変数設定、`vercel --prod`の順に実行します。GitHub Actions/CLIのトークンはリポジトリへ書かず、各CLIの安全なログインストアまたはCI Secretで管理します。
+
 1. GitHubリポジトリをVercelにImportし、Framework PresetがNext.js、Root Directoryが`./`であることを確認します。
 2. Supabaseを使う場合は新規プロジェクト作成時にリージョン「Northeast Asia (Tokyo) / `ap-northeast-1`」を選びます。既存プロジェクトのリージョンを後から切り替えるのではなく、必要なら東京に新規作成して移行します。
 3. Supabase SQL Editorで[`supabase/schema.sql`](supabase/schema.sql)を実行します。VercelのProduction環境変数に`SUPABASE_URL`、`SUPABASE_SERVICE_ROLE_KEY`、ランダムな`CRON_SECRET`を設定します。service-roleキーはサーバー専用で、`NEXT_PUBLIC_`を付けず、ブラウザーへ送らないでください。
