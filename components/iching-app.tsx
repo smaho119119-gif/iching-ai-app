@@ -48,17 +48,20 @@ function Ritual({ method, setMethod, onComplete }: { method: CastingMethod; setM
       if (next.length === 6) window.setTimeout(() => onComplete(next), 380);
     }, 780);
   };
+  const progress = Math.round((values.length / 6) * 100);
   return <div className="ritual-stage">
+    <div className="ritual-aurora" aria-hidden="true"/>
     <div className="ritual-kicker"><span className="ritual-kicker-line"/>QUIET THE MIND <span className="ritual-kicker-line"/></div>
     <h2 className="ritual-heading">{values.length < 6 ? "心を澄ませて、問いを思い浮かべて。" : "六つの爻が、そろいました。"}</h2>
     <p className="ritual-intro">{values.length < 6 ? `コインをゆっくり振って、卦を一爻ずつ重ねましょう。${6-values.length}回残っています。` : "いまの状況と、これからの変化を読み解いていきます。"}</p>
+    <div className="ritual-progress" aria-label={`六爻中${values.length}爻を作成済み`}><div className="ritual-progress-copy"><span>LINE {String(values.length).padStart(2,"0")} / 06</span><b>{progress}%</b></div><div className="ritual-progress-track"><i style={{width:`${progress}%`}}/></div><div className="ritual-pips">{Array.from({length:6},(_,index)=><span key={index} className={index < values.length ? "active" : ""}>{index < values.length ? values[index] === 6 || values[index] === 9 ? "變" : "●" : "○"}</span>)}</div></div>
     <div className="method-toggle" aria-label="占い方"><button onClick={() => setMethod("coins")} className={method === "coins" ? "selected" : ""}><Coins size={14}/> コイン</button><button onClick={() => setMethod("yarrow")} className={method === "yarrow" ? "selected" : ""}><Waves size={14}/> 筮竹</button></div>
     <div className="reading-layout">
-      <div className="ritual-orb"><span className="orb-ring orb-ring-one"/><span className="orb-ring orb-ring-two"/><span className="orb-glyph">易</span><span className="orb-caption">{method === "coins" ? "THREE COINS" : "YARROW STALKS"}</span></div>
+      <div className="ritual-orb"><div className="ritual-card-back card-back-one"/><div className="ritual-card-back card-back-two"/><span className="orb-ring orb-ring-one"/><span className="orb-ring orb-ring-two"/><span className="orb-glyph">易</span><span className="orb-caption">{method === "coins" ? "THREE COINS" : "YARROW STALKS"}</span></div>
       <div className="lines-build">{Array.from({length:6},(_,row) => { const index=5-row;const value = values[index]; return <div className={`build-line-row ${index < values.length ? "built" : "pending"}`} key={index}><span>{["初","二","三","四","五","上"][index]}爻</span><div className={`build-line ${value === 7 || value === 9 ? "yang" : value === 6 || value === 8 ? "yin" : ""} ${flipping && index === 5-values.length ? "build-active" : ""}`}><i/><i/></div><span className="build-marker">{value === 6 || value === 9 ? "變" : index < values.length ? "·" : ""}</span></div>; })}</div>
     </div>
     {flipping && <div className="coin-tray" aria-live="polite">{coins.map((coin,index)=><div className={`coin coin-${coin === 3 ? "yang" : "yin"}`} key={index} style={{"--coin-index":index} as React.CSSProperties}><span>{coin===3?"陽":"陰"}</span></div>)}</div>}
-    <button className="cast-button" onClick={toss} disabled={flipping || values.length >= 6}>{flipping ? <><Sparkles size={16}/> 聆く…</> : values.length < 6 ? <><Coins size={16}/> {values.length === 0 ? "最初の一投" : `第 ${values.length+1} 回を投げる`} <ArrowRight size={15}/></> : <><Check size={16}/> 卦を読み解く <ArrowRight size={15}/></>}</button>
+    <button className="cast-button" onClick={toss} disabled={flipping || values.length >= 6}>{flipping ? <><Sparkles size={16}/> 天地の気配を読む…</> : values.length < 6 ? <><Coins size={16}/> {values.length === 0 ? "最初の一投を放つ" : `第 ${values.length+1} 爻を引く`} <ArrowRight size={15}/></> : <><Check size={16}/> この卦を開く <ArrowRight size={15}/></>}</button>
     <p className="ritual-note">{method === "coins" ? "各爻は３枚のコインの組み合わせから生まれます。" : "筮竹法の手順を簡略化してデジタルで再現します。"}</p>
   </div>;
 }

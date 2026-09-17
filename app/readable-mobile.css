@@ -12,6 +12,45 @@ body {
   -webkit-font-smoothing: auto;
 }
 
+/* Readability is a product feature: the divination flow is designed for a
+   hand-held screen first, not for a dense editorial mockup. */
+.site-nav nav a, .site-nav nav button { font-size: 14px; font-weight: 600; }
+.hero-kicker, .ritual-kicker, .section-eyebrow, .loading-label { font-size: 12px; font-weight: 600; }
+.hero-description { font-size: 18px; }
+.cta-caption, .invitation-index, .principles-index { font-size: 13px; }
+.question-card label { font-size: 17px; font-weight: 700; }
+.question-card label span, .question-footer > span { font-size: 12px; }
+.question-card textarea { font: 16px/1.9 var(--sans); }
+.question-footer button { font-size: 16px; font-weight: 700; }
+.ritual-heading { font-size: 28px; font-weight: 600; }
+.ritual-intro { font-size: 16px; }
+.method-toggle button { font-size: 15px; font-weight: 600; }
+.ritual-progress-copy, .ritual-pips { font-size: 12px; }
+.build-line-row > span:first-child, .build-marker { font-size: 13px; font-weight: 600; }
+.ritual-note { font-size: 13px; }
+.result-topline, .result-number span, .chart-caption, .chart-caption b { font-size: 12px; }
+.result-hero h2 { font-size: 25px; font-weight: 700; }
+.result-hero > div:last-child > p { font-size: 14px; }
+.hex-position, .change-label, .chart-trigrams > div > span, .chart-trigrams small { font-size: 13px; }
+.chart-trigrams b, .related-inner b { font-size: 16px; font-weight: 700; }
+.reading-copy h3, .change-card h3, .related-card h3, .advice-section h3 { font-size: 23px; font-weight: 700; }
+.reading-overview, .reading-copy > p, .change-card p, .related-card > p, .advice-section > p, .judgment-quote > p { font-size: 17px; line-height: 2; }
+.judgment-quote > span, .related-inner span, .action-list li > span, .ai-footnote { font-size: 13px; }
+.structure-copy { font-size: 15px !important; }
+.action-list li > p, .reflection-note p { font-size: 16px; line-height: 1.9; }
+.result-actions button { font-size: 15px; font-weight: 700; }
+.hexagram-tile > span, .hexagram-tile > strong { font-size: 13px; font-weight: 700; }
+.hexagram-tile > small { font-size: 12px; }
+.billing-intro, .api-key-intro, .plan-card > p, .plan-card li, .corporate-note p { font-size: 15px; }
+.api-key-card > label { font-size: 13px; font-weight: 700; }
+.api-key-safety p { font-size: 14px; }
+
+@media (min-width: 601px) {
+  .primary-cta, .cast-button { min-height: 54px; font-size: 16px; font-weight: 700; }
+  .invitation-body h2, .principles-content h2, .hexagram-library h2 { font-size: 31px; font-weight: 600; }
+  .invitation-body > div:first-child > p, .principles-content > p, .hexagram-library > p { font-size: 16px; }
+}
+
 button, input, textarea, select { font-family: var(--sans); }
 
 @media (min-width: 601px) and (max-width: 1024px) {
