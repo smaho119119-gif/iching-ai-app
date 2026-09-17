@@ -18,7 +18,7 @@ export async function GET(request: Request) {
   }
 
   try {
-    const response = await fetch(`${supabaseUrl.replace(/\/$/u, "")}/rest/v1/keepalive?id=eq.1&select=id`, {
+    const response = await fetch(`${supabaseUrl.replace(/\/$/u, "")}/rest/v1/iching_ai_app_keepalive?id=eq.1&select=id`, {
       headers: { apikey: serviceRoleKey, Authorization: `Bearer ${serviceRoleKey}` },
       signal: AbortSignal.timeout(5000),
       cache: "no-store",
