@@ -32,6 +32,7 @@ npm run dev
 - スマートフォンからの手書き卦写真撮影・AI認識
 - LINE Messaging APIの「今日の卦」Webhook
 - Stripe Checkout、契約状態確認、顧客ポータル
+- 東京リージョンのSupabase接続オプションと、認証済み日次ヘルスチェック
 
 LINEとStripeは各サービスの開発者アカウントおよび環境変数を設定した場合に有効です。LINE Webhook署名を検証します。Stripe決済を有効化する前にテストモードで商品・Webhookを確認してください。Stripe価格設定が有効な環境では、手書き認識をプレミアム/法人契約に制限します。
 
@@ -45,9 +46,21 @@ npm run build
 
 実AI認識の確認には、上記のいずれかの有効なAPIキーとプロバイダー側の利用枠が必要です。APIキーがない環境ではアプリが安全に503を返し、キーを画面やログへ露出しません。
 
-## 公開・デプロイ
+## Vercelへのデプロイ
 
-GitHub Pagesのような静的ホスティングではなく、Next.jsのサーバー/API Routesが動作するホスティング（Vercel等）へデプロイしてください。HTTPSを必須にし、環境変数はホスティング側のSecret設定に登録します。GitHubリポジトリには`.env.example`のみを含め、`.env.local`は公開しません。
+1. GitHubリポジトリをVercelにImportし、Framework PresetがNext.js、Root Directoryが`./`であることを確認します。
+2. Supabaseを使う場合は新規プロジェクト作成時にリージョン「Northeast Asia (Tokyo) / `ap-northeast-1`」を選びます。既存プロジェクトのリージョンを後から切り替えるのではなく、必要なら東京に新規作成して移行します。
+3. Supabase SQL Editorで[`supabase/schema.sql`](supabase/schema.sql)を実行します。VercelのProduction環境変数に`SUPABASE_URL`、`SUPABASE_SERVICE_ROLE_KEY`、ランダムな`CRON_SECRET`を設定します。service-roleキーはサーバー専用で、`NEXT_PUBLIC_`を付けず、ブラウザーへ送らないでください。
+4. `AI_PROVIDER`と対応するサーバー側AIキー（必要な場合）、LINE・Stripeの必要な環境変数をVercel側へ登録します。ローカルの`.env.local`はGitHubへコミットしません。
+5. Deploy後、`https://<your-domain>/api/health`が`{"status":"ok"}`を返すことを確認します。CronはVercelが認証ヘッダー付きで日次実行し、Supabaseの接続確認だけを行います。
+
+[`vercel.json`](vercel.json) はVercel Functionsを東京（`hnd1`）に配置し、毎日03:00 UTC（日本時間12:00）にヘルスチェックを実行する設定です。CronはHobbyプランの最短頻度である日次に合わせています。
+
+### スリープと常時稼働について
+
+Vercel Functionsはサーバーレスのため、アイドル中に実行環境が休止し、次回アクセス時に起動する場合があります。Cronは定期的な接続確認ですが、Functionを常時起動状態に保つ保証はありません。また、Supabase Freeは低利用の状態が続くとプロジェクトを自動休止することがあります。日次アクセスは休止回避に役立つことがありますが、Supabaseが保証する方法ではありません。確実に自動休止を避けたい本番運用ではSupabase有料プランを選択してください。Vercelの常時稼働やPro機能も別途プラン・料金条件を確認してください。
+
+実データを保存する機能を追加する場合は、RLSを有効にし、利用者ごとの認証・アクセス制御を設計してからテーブルを作成してください。現状のキープアライブテーブルは接続確認専用で、質問やAPIキーを保存しません。
 
 ## 補足
 
